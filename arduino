@@ -1,0 +1,90 @@
+pir con esp32
+Vcc - 5v
+out -p19
+Gnd - Gnd
+
+servomotor con esp32
+Cafe - GND
+Rojo - 5V
+Naranja - P18
+
+ led con esp32
+
+Negativo - Gnd
+Positivo- p21
+
+codigo de Arduino 
+
+#include <ESP32Servo.h>
+
+Servo servo;  
+int servoPos = 90; 
+
+int pirPin = 19; 
+int ledPin = 12;  
+
+bool puertaAbierta = false;
+
+
+void setup() {
+  servo.attach(18);  
+  servo.write(servoPos);  
+  
+  pinMode(pirPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  
+  Serial.begin(115200);
+  Serial.setTimeout(100);
+
+  
+  Serial.println("ok");
+ 
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    String command = Serial.readStringUntil('\n');
+    command.trim();
+
+    if (command == "open") {
+      abrir_puerta2();
+    } else if (command == "close") {
+      cerrar_puerta();
+    }
+  }
+
+  int pirValue = digitalRead(pirPin);
+  if (pirValue == HIGH) {
+    Serial.println("SENSOR PIR CONFIRMA PUERTA ABIERTA");
+    abrir_puerta();  
+    digitalWrite(ledPin, HIGH);  // Enciende el LED
+  } else {
+    digitalWrite(ledPin, LOW);
+    
+    
+  }
+}
+
+void abrir_puerta() {
+  servo.write(0);
+  digitalWrite(ledPin, HIGH); // Enciende el LED
+  delay(2000);
+  servo.write(servoPos);
+}
+
+void abrir_puerta2() {
+  servo.write(0);
+  digitalWrite(ledPin, HIGH); // Enciende el LED
+  delay(2000);
+  servo.write(servoPos);
+  Serial.println("PUERTA ABIERTA");
+  
+}
+
+void cerrar_puerta() {
+  servo.write(90);
+  delay(2000);
+  servo.write(servoPos);
+  
+}
+
